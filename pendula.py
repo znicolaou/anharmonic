@@ -22,6 +22,7 @@ parser.add_argument("--dt", type=float, default=0.05, dest='dt', help='Time betw
 parser.add_argument("--noisestep", type=int, default=1, dest='step', help='Noise steps per timestep')
 parser.add_argument("--seed", type=int, default=1, dest='seed', help='Seed for random initial conditions')
 parser.add_argument("--damp", type=float, default=0.1, dest='damp', help='Damping coefficient')
+parser.add_argument("--spring", type=float, default=1.0, dest='spring', help='Spring coefficient')
 args = parser.parse_args()
 
 
@@ -29,7 +30,7 @@ def func(t, y):
 		q=y[:N]
 		p=y[N:]
 
-		return np.concatenate( [p/lengths, (-args.damp*args.freq*p - (1+args.amp*(args.freq)**2*np.cos(t))*np.sin(q) +np.roll(lengths,1)*np.sin(np.roll(q,1)-q)+np.roll(lengths,-1)*np.sin(np.roll(q,-1)-q)+(np.roll(lengths,1)+np.roll(lengths,-1)-2*lengths)*np.sin(q)+noises)/args.freq**2] )
+		return np.concatenate( [p/lengths, (-args.damp*args.freq*p - (1+args.amp*(args.freq)**2*np.cos(t))*np.sin(q) +args.spring*np.roll(lengths,1)*np.sin(np.roll(q,1)-q)+args.spring*np.roll(lengths,-1)*np.sin(np.roll(q,-1)-q)+args.spring*(np.roll(lengths,1)+np.roll(lengths,-1)-2*lengths)*np.sin(q)+noises)/args.freq**2] )
 
 start = timeit.default_timer()
 
