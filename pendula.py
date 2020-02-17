@@ -7,6 +7,7 @@ import numpy as np
 import progressbar
 import timeit
 from scipy.integrate import ode
+from scipy.signal import argrelmax
 
 
 #Command line arguments
@@ -18,11 +19,13 @@ parser.add_argument("--amplitude", type=float, default=0.05, dest='amp', help='D
 parser.add_argument("--delta", type=float, default=0.5, dest='delta', help='Length change')
 parser.add_argument("--epsilon", type=float, default=0.0, dest='epsilon', help='Noise intensity')
 parser.add_argument("--cycles", type=float, default=1000, dest='cycles', help='Simulation time in driving cycles')
+parser.add_argument("--average", nargs='+',type=int, default=[50,100], dest='avg', help='Driving cycles to wait before averaging')
 parser.add_argument("--dt", type=float, default=0.05, dest='dt', help='Time between outputs in driving cycles')
 parser.add_argument("--noisestep", type=int, default=1, dest='step', help='Noise steps per timestep')
 parser.add_argument("--seed", type=int, default=1, dest='seed', help='Seed for random initial conditions')
 parser.add_argument("--damp", type=float, default=0.1, dest='damp', help='Damping coefficient')
 parser.add_argument("--spring", type=float, default=1.0, dest='spring', help='Spring coefficient')
+parser.add_argument("--init", type=float, default=0.01, dest='init', help='Initial random scale')
 args = parser.parse_args()
 
 
@@ -39,10 +42,10 @@ np.random.seed(args.seed)
 
 ys=np.zeros((int(args.cycles/args.dt),2*N))
 y=np.zeros(2*N)
-y[:N] = 0.2*(np.random.random(N)-0.5)
+y[N:] = args.init*(np.random.random(N)-0.5)
 lengths=np.array([1+args.delta*(-1)**i for i in range(N)])
 noises=2*args.epsilon*(np.random.random(N)-0.5)
-rode=ode(func).set_integrator('vode', atol=1e-3, rtol=1e-2, max_step=2*np.pi*args.dt/args.step)
+rode=ode(func).set_integrator('vode', rtol=1e-2, max_step=2*np.pi*args.dt/args.step)
 rode.set_initial_value( y, 0 )
 
 pbar=progressbar.ProgressBar(widgets=['Integration: ', progressbar.Percentage(), progressbar.Bar(), ' ', progressbar.ETA()], maxval=2*np.pi*args.cycles)
@@ -64,6 +67,11 @@ print('\n runtime: %f' % (stop - start))
 file=open(args.filebase+'out.dat','w')
 print(*sys.argv,file=file)
 print("%i %f %f %f %f %f %f %f %i %i"%(args.num, args.freq, args.amp, args.dt, args.damp, args.epsilon, args.delta,  args.cycles, args.seed, args.step), file=file)
+
+norms=np.sum(ys[int(args.avg[0]/args.dt):int(args.avg[1]/args.dt),:N]**2,axis=1)
+maxes=np.array(argrelmax(norms)[0])
+fit=np.polyfit(args.dt*maxes, np.log(norms[maxes]),1)[0]
+print(1.0/np.average(2*np.diff(maxes)*args.dt), fit)
 
 print('runtime: %f' % (stop - start), file=file)
 file.close()

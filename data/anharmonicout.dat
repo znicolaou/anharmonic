@@ -1,0 +1,3 @@
+./pendula.py --filebase data/anharmonic --num 32 --cycles 5000 --frequency 3.4 --amplitude 0.05 --epsilon 0.0 --noisestep 1
+32 3.400000 0.050000 0.050000 0.100000 0.000000 0.500000 5000.000000 1 1
+runtime: 11.030455
