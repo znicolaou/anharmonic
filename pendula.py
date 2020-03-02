@@ -46,7 +46,7 @@ ys=np.zeros((int(args.cycles/args.dt),2*N))
 y=np.zeros(2*N)
 y[N:] = args.init*(np.random.random(N)-0.5)
 lengths=np.array([1+args.delta*(-1)**i for i in range(N)])+args.epsilon*(np.random.random(N)-0.5)
-noises=2*args.sigma*(np.random.random(N)-0.5)
+noises=np.random.normal(0,args.sigma/np.sqrt(args.dt/args.step))
 rode=ode(func).set_integrator('vode', rtol=args.rtol, max_step=2*np.pi*args.dt/args.step)
 rode.set_initial_value( y, 0 )
 
@@ -56,7 +56,7 @@ pbar.start()
 for n in range(int(args.cycles/args.dt)):
 	for m in range(args.step):
 		t=n*2*np.pi*args.dt+m*2*np.pi*args.dt/args.step
-		noises=2*args.epsilon*(np.random.random(N)-0.5)
+		noises=np.random.normal(0,args.sigma/np.sqrt(args.dt/args.step))
 		y=rode.integrate(rode.t + 2*np.pi*args.dt/args.step)
 	pbar.update(t)
 	ys[n]=y
