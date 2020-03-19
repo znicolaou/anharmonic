@@ -1,7 +1,7 @@
 # Files in the anharmonic repository
 The file pendula.py is a Python script used to numerically integrate the anharmonic time crystal pendulum model using SciPy's Variable-coefficient Ordinary Differential Equation solver.  The file plot.nb is a Mathematica notebook which can be used to plot results.  The folder data contains sample output, which is visualized in plot.nb.
 # System requirements
-The Python code has been run with Anaconda2 and Anaconda3, which can both be downloaded from the Anaconda website: https://www.anaconda.com/download/#macos.  It requires packages numpy, scipy, and progressbar. To create an environment with these packages, execute `conda create -n anharmonic_env scipy numpy progressbar` and activate it with `source activate anharmonic_env`.  The Mathematica code has been run with Mathematica 11.1.1.0.
+The Python code has been run with Anaconda2 and Anaconda3, which can both be downloaded from the Anaconda website: https://www.anaconda.com/download/#macos.  It requires packages numpy, scipy, and progressbar. To create an environment with these packages, execute `conda create -n anharmonic_env scipy numpy progressbar` and activate it with `source activate anharmonic_env`.  The Mathematica code has been run with Mathematica 12.0.0.0.
 # Usage
 Running the terminal command `./pendula.py -h` will give a usage message with command line argument descriptions.
 ```
