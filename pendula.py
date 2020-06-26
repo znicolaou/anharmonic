@@ -9,7 +9,6 @@ import timeit
 from scipy.integrate import ode
 from scipy.signal import argrelmax
 
-
 #Command line arguments
 parser = argparse.ArgumentParser(description='Noisy pendula.')
 parser.add_argument("--filebase", type=str, required=True, dest='filebase', help='Base string for file output')
@@ -29,7 +28,6 @@ parser.add_argument("--spring", type=float, default=1.0, dest='spring', help='Sp
 parser.add_argument("--init", type=float, default=0.01, dest='init', help='Initial random scale')
 parser.add_argument("--rtol", type=float, default=1e-2, dest='rtol', help='Relative error tolerance')
 args = parser.parse_args()
-
 
 def func(t, y):
 		q=y[:N]
