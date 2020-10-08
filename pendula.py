@@ -19,6 +19,7 @@ parser.add_argument("--delta", type=float, default=0.5, dest='delta', help='Alte
 parser.add_argument("--noise", type=float, default=0.0, dest='sigma', help='Noise intensity')
 parser.add_argument("--disorder", type=float, default=0.0, dest='epsilon', help='Pendulum length disorder scale')
 parser.add_argument("--cycles", type=float, default=1000, dest='cycles', help='Simulation time in driving cycles')
+parser.add_argument("--outcycle", type=float, default=1000, dest='outcycle', help='Cycle to start outputting')
 parser.add_argument("--average", nargs=2, type=int, default=[50, 100], metavar=('START', 'END'), dest='avg', help='Driving cycles over which to calculate growth rate')
 parser.add_argument("--dt", type=float, default=0.05, dest='dt', help='Time between outputs in driving cycles')
 parser.add_argument("--noisestep", type=int, default=1, dest='step', help='Noise steps per output timestep')
@@ -41,7 +42,7 @@ start = timeit.default_timer()
 N=args.num
 np.random.seed(args.seed)
 
-ys=np.zeros((int(args.cycles/args.dt),2*N))
+ys=np.zeros((int((args.cycles-args.outcycle)/args.dt),2*N))
 y=np.zeros(2*N)
 y[N:] = args.init*(np.random.random(N)-0.5)
 lengths=np.array([1+args.delta*(-1)**i for i in range(N)])+args.epsilon*(np.random.random(N)-0.5)
@@ -60,7 +61,8 @@ for n in range(int(args.cycles/args.dt)):
 		y=rode.integrate(rode.t + 2*np.pi*args.dt/args.step)
 	if args.verbose==1:
 		pbar.update(t)
-	ys[n]=y
+	if n >= int(args.outcycle/args.dt):
+		ys[n-int(args.outcycle/args.dt)]=y
 
 np.save(args.filebase+"dat",ys)
 
@@ -73,6 +75,7 @@ else:
 file=open(args.filebase+'out.dat','w')
 print(*sys.argv,file=file)
 print("%i %f %f %f %f %f %f %f %i %i"%(args.num, args.freq, args.amp, args.dt, args.damp, args.epsilon, args.delta,  args.cycles, args.seed, args.step), file=file)
+print(*lengths, file=file)
 
 norms=np.sum(ys[int(args.avg[0]/args.dt):int(args.avg[1]/args.dt),:N]**2,axis=1)
 maxes=np.array(argrelmax(norms)[0])
