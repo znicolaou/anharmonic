@@ -27,6 +27,7 @@ parser.add_argument("--damp", type=float, default=0.1, dest='damp', help='Dampin
 parser.add_argument("--spring", type=float, default=1.0, dest='spring', help='Spring coefficient')
 parser.add_argument("--init", type=float, default=0.01, dest='init', help='Initial random scale')
 parser.add_argument("--rtol", type=float, default=1e-2, dest='rtol', help='Relative error tolerance')
+parser.add_argument("--verbose", type=int, default=1, dest='verbose', help='Verbose output')
 args = parser.parse_args()
 
 def func(t, y):
@@ -48,21 +49,26 @@ noises=np.random.normal(0,args.sigma/np.sqrt(args.dt/args.step))
 rode=ode(func).set_integrator('vode', rtol=args.rtol, max_step=2*np.pi*args.dt/args.step)
 rode.set_initial_value( y, 0 )
 
-pbar=progressbar.ProgressBar(widgets=['Integration: ', progressbar.Percentage(), progressbar.Bar(), ' ', progressbar.ETA()], maxval=2*np.pi*args.cycles)
-pbar.start()
+if args.verbose==1:
+	pbar=progressbar.ProgressBar(widgets=['Integration: ', progressbar.Percentage(), progressbar.Bar(), ' ', progressbar.ETA()], maxval=2*np.pi*args.cycles)
+	pbar.start()
 
 for n in range(int(args.cycles/args.dt)):
 	for m in range(args.step):
 		t=n*2*np.pi*args.dt+m*2*np.pi*args.dt/args.step
 		noises=np.random.normal(0,args.sigma/np.sqrt(args.dt/args.step))
 		y=rode.integrate(rode.t + 2*np.pi*args.dt/args.step)
-	pbar.update(t)
+	if args.verbose==1:
+		pbar.update(t)
 	ys[n]=y
 
 np.save(args.filebase+"dat",ys)
 
 stop = timeit.default_timer()
-print('\n runtime: %f' % (stop - start))
+if args.verbose==1:
+	print('\n runtime: %f' % (stop - start))
+else:
+	print('runtime: %f' % (stop - start))
 
 file=open(args.filebase+'out.dat','w')
 print(*sys.argv,file=file)
@@ -71,7 +77,8 @@ print("%i %f %f %f %f %f %f %f %i %i"%(args.num, args.freq, args.amp, args.dt, a
 norms=np.sum(ys[int(args.avg[0]/args.dt):int(args.avg[1]/args.dt),:N]**2,axis=1)
 maxes=np.array(argrelmax(norms)[0])
 fit=np.polyfit(args.dt*maxes, np.log(norms[maxes]),1)[0]
-print(1.0/np.average(2*np.diff(maxes)*args.dt), fit)
+if args.verbose==1:
+	print(1.0/np.average(2*np.diff(maxes)*args.dt), fit)
 
 print('runtime: %f' % (stop - start), file=file)
 file.close()
