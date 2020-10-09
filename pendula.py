@@ -7,7 +7,7 @@ import numpy as np
 import progressbar
 import timeit
 from scipy.integrate import ode
-from scipy.signal import argrelmax
+from scipy.signal import argrelmin, argrelmax
 
 #Command line arguments
 parser = argparse.ArgumentParser(description='Noisy pendula.')
@@ -19,7 +19,7 @@ parser.add_argument("--delta", type=float, default=0.5, dest='delta', help='Alte
 parser.add_argument("--noise", type=float, default=0.0, dest='sigma', help='Noise intensity')
 parser.add_argument("--disorder", type=float, default=0.0, dest='epsilon', help='Pendulum length disorder scale')
 parser.add_argument("--cycles", type=float, default=1000, dest='cycles', help='Simulation time in driving cycles')
-parser.add_argument("--outcycle", type=float, default=1000, dest='outcycle', help='Cycle to start outputting')
+parser.add_argument("--outcycle", type=float, default=0, dest='outcycle', help='Cycle to start outputting')
 parser.add_argument("--average", nargs=2, type=int, default=[50, 100], metavar=('START', 'END'), dest='avg', help='Driving cycles over which to calculate growth rate')
 parser.add_argument("--dt", type=float, default=0.05, dest='dt', help='Time between outputs in driving cycles')
 parser.add_argument("--noisestep", type=int, default=1, dest='step', help='Noise steps per output timestep')
@@ -57,31 +57,29 @@ if args.verbose==1:
 for n in range(int(args.cycles/args.dt)):
 	for m in range(args.step):
 		t=n*2*np.pi*args.dt+m*2*np.pi*args.dt/args.step
-		noises=np.random.normal(0,args.sigma/np.sqrt(args.dt/args.step))
+		noises=np.random.normal(0,args.sigma/np.sqrt(args.dt/args.step),size=N)
 		y=rode.integrate(rode.t + 2*np.pi*args.dt/args.step)
 	if args.verbose==1:
 		pbar.update(t)
 	if n >= int(args.outcycle/args.dt):
 		ys[n-int(args.outcycle/args.dt)]=y
-
-np.save(args.filebase+"dat",ys)
-
-stop = timeit.default_timer()
 if args.verbose==1:
-	print('\n runtime: %f' % (stop - start))
-else:
-	print('runtime: %f' % (stop - start))
+	pbar.finish()
+
+N2=argrelmin(np.linalg.norm(ys-ys[0],axis=1))[0][-1]
+dy=np.abs(np.fft.fft((np.mod(ys+np.pi,2*np.pi)-np.pi)[:N2],axis=0))**2
+slips=np.mean(np.round(np.abs((ys[0,:N]-ys[-1,N:])/(2*np.pi))))
+np.save(args.filebase+"power",np.array([np.arange(N2)/(N2*args.dt),np.mean(dy,axis=1)]))
+stop = timeit.default_timer()
 
 file=open(args.filebase+'out.dat','w')
 print(*sys.argv,file=file)
 print("%i %f %f %f %f %f %f %f %i %i"%(args.num, args.freq, args.amp, args.dt, args.damp, args.epsilon, args.delta,  args.cycles, args.seed, args.step), file=file)
+print("%f"%(slips), file=file)
 print(*lengths, file=file)
-
-norms=np.sum(ys[int(args.avg[0]/args.dt):int(args.avg[1]/args.dt),:N]**2,axis=1)
-maxes=np.array(argrelmax(norms)[0])
-fit=np.polyfit(args.dt*maxes, np.log(norms[maxes]),1)[0]
-if args.verbose==1:
-	print(1.0/np.average(2*np.diff(maxes)*args.dt), fit)
-
 print('runtime: %f' % (stop - start), file=file)
+print('runtime: %f' % (stop - start))
+if args.verbose==1:
+	np.save(args.filebase+"dat",ys)
+
 file.close()
