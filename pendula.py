@@ -70,7 +70,7 @@ try:
 	N2=argrelmin(np.linalg.norm(ys-ys[0],axis=1))[0][-1]
 	dy=np.abs(np.fft.fft((np.mod(ys+np.pi,2*np.pi)-np.pi)[:N2],axis=0))**2
 	slips=np.mean(np.round(np.abs((ys[0,:N]-ys[-1,N:])/(2*np.pi))))
-except err:
+except:
 	N2=0
 	slips=0
 np.save(args.filebase+"power",np.array([np.arange(N2)/(N2*args.dt),np.mean(dy,axis=1)]))
