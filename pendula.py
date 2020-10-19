@@ -6,6 +6,7 @@ import sys
 import numpy as np
 import progressbar
 import timeit
+import os
 from scipy.integrate import ode
 from scipy.signal import argrelmin, argrelmax
 
@@ -14,11 +15,13 @@ parser = argparse.ArgumentParser(description='Noisy pendula.')
 parser.add_argument("--filebase", type=str, required=True, dest='filebase', help='Base string for file output')
 parser.add_argument("--num", type=int, default=32, dest='num', help='Number of pendula')
 parser.add_argument("--frequency", type=float, default=3.4, dest='freq', help='Driving frequency')
+parser.add_argument("--initamplitude", type=float, default=0.05, dest='amp0', help='Driving amplitude')
 parser.add_argument("--amplitude", type=float, default=0.05, dest='amp', help='Driving amplitude')
 parser.add_argument("--delta", type=float, default=0.5, dest='delta', help='Alternating pendulum length scale')
 parser.add_argument("--noise", type=float, default=0.0, dest='sigma', help='Noise intensity')
 parser.add_argument("--disorder", type=float, default=0.0, dest='epsilon', help='Pendulum length disorder scale')
 parser.add_argument("--cycles", type=float, default=1000, dest='cycles', help='Simulation time in driving cycles')
+parser.add_argument("--initcycle", type=float, default=0, dest='initcycle', help='Simulation time in driving cycles')
 parser.add_argument("--outcycle", type=float, default=0, dest='outcycle', help='Cycle to start outputting')
 parser.add_argument("--average", nargs=2, type=int, default=[50, 100], metavar=('START', 'END'), dest='avg', help='Driving cycles over which to calculate growth rate')
 parser.add_argument("--dt", type=float, default=0.05, dest='dt', help='Time between outputs in driving cycles')
@@ -34,8 +37,11 @@ args = parser.parse_args()
 def func(t, y):
 		q=y[:N]
 		p=y[N:]
-
-		return np.concatenate( [p/lengths, (-args.damp*args.freq*p - (1+args.amp*(args.freq)**2*np.cos(t))*np.sin(q) +args.spring*np.roll(lengths,1)*np.sin(np.roll(q,1)-q)+args.spring*np.roll(lengths,-1)*np.sin(np.roll(q,-1)-q)+args.spring*(np.roll(lengths,1)+np.roll(lengths,-1)-2*lengths)*np.sin(q)+noises)/args.freq**2] )
+		if t<args.initcycle:
+			amp=args.amp0+t/args.initcycle*(args.amp-args.amp0)
+		else:
+			amp=args.amp
+		return np.concatenate( [p/lengths, (-args.damp*args.freq*p - (1+amp*(args.freq)**2*np.cos(t))*np.sin(q) +args.spring*np.roll(lengths,1)*np.sin(np.roll(q,1)-q)+args.spring*np.roll(lengths,-1)*np.sin(np.roll(q,-1)-q)+args.spring*(np.roll(lengths,1)+np.roll(lengths,-1)-2*lengths)*np.sin(q)+noises)/args.freq**2] )
 
 start = timeit.default_timer()
 
@@ -44,7 +50,14 @@ np.random.seed(args.seed)
 
 ys=np.zeros((int((args.cycles-args.outcycle)/args.dt),2*N))
 y=np.zeros(2*N)
-y[N:] = args.init*(np.random.random(N)-0.5)
+if (os.path.isfile(args.filebase+"ic.npy")):
+	if args.verbose==1:
+		print("using initial conditions from file")
+	y=np.load(args.filebase+"ic.npy")
+else:
+	if args.verbose==1:
+		print("using random initial contions")
+	y[N:] = args.init*(np.random.random(N)-0.5)
 lengths=np.array([1+args.delta*(-1)**i for i in range(N)])+args.epsilon*(np.random.random(N)-0.5)
 noises=np.random.normal(0,args.sigma/np.sqrt(args.dt/args.step))
 rode=ode(func).set_integrator('vode', rtol=args.rtol, max_step=2*np.pi*args.dt/args.step)
@@ -86,5 +99,7 @@ print('runtime: %f' % (stop - start), file=file)
 print('runtime: %f' % (stop - start))
 if args.verbose==1:
 	np.save(args.filebase+"dat",ys)
+
+np.save(args.filebase+"fs",ys[-1])
 
 file.close()
