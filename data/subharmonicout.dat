@@ -1,3 +1,0 @@
-./pendula.py --frequency 2.0 --amplitude 0.12 --filebase data/subharmonic --cycles 5000
-32 2.000000 0.120000 0.050000 0.100000 0.000000 0.500000 5000.000000 1 1
-runtime: 21.798852

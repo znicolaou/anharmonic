@@ -1,3 +1,0 @@
-./pendula.py --amplitude 0.8 --filebase data/harmonic --cycles 5000 --frequency 1.0
-32 1.000000 0.800000 0.050000 0.100000 0.000000 0.500000 5000.000000 1 1
-runtime: 45.193484

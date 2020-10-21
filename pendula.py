@@ -37,8 +37,8 @@ args = parser.parse_args()
 def func(t, y):
 		q=y[:N]
 		p=y[N:]
-		if t<args.initcycle:
-			amp=args.amp0+t/args.initcycle*(args.amp-args.amp0)
+		if t < 2*np.pi*args.initcycle:
+			amp=args.amp0+t/(2*np.pi*args.initcycle)*(args.amp-args.amp0)
 		else:
 			amp=args.amp
 		return np.concatenate( [p/lengths, (-args.damp*args.freq*p - (1+amp*(args.freq)**2*np.cos(t))*np.sin(q) +args.spring*np.roll(lengths,1)*np.sin(np.roll(q,1)-q)+args.spring*np.roll(lengths,-1)*np.sin(np.roll(q,-1)-q)+args.spring*(np.roll(lengths,1)+np.roll(lengths,-1)-2*lengths)*np.sin(q)+noises)/args.freq**2] )
@@ -59,7 +59,7 @@ else:
 	print("using random initial contions")
 	y[N:] = args.init*(np.random.random(N)-0.5)
 lengths=np.array([1+args.delta*(-1)**i for i in range(N)])+args.epsilon*(np.random.random(N)-0.5)
-noises=np.random.normal(0,args.sigma/np.sqrt(args.dt/args.step))
+noises=np.random.normal(0,args.sigma/np.sqrt(args.dt/args.step),size=N)
 rode=ode(func).set_integrator('vode', rtol=args.rtol, max_step=2*np.pi*args.dt/args.step)
 rode.set_initial_value( y, 0 )
 
