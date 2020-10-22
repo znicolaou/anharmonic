@@ -79,6 +79,7 @@ for n in range(int(args.cycles/args.dt)):
 if args.verbose==1:
 	pbar.finish()
 
+order=np.mean((np.mod(ys+np.pi,2*np.pi)-np.pi)[:,:N]**2)
 try:
 	N2=argrelmin(np.linalg.norm(ys-ys[0],axis=1))[0][-1]
 	dy=np.abs(np.fft.fft((np.mod(ys+np.pi,2*np.pi)-np.pi)[:N2],axis=0))**2
@@ -92,8 +93,7 @@ stop = timeit.default_timer()
 
 file=open(args.filebase+'out.dat','w')
 print(*sys.argv,file=file)
-print("%i %f %f %f %f %f %f %f %i %i"%(args.num, args.freq, args.amp, args.dt, args.damp, args.epsilon, args.delta,  args.cycles, args.seed, args.step), file=file)
-print("%f %f"%(np.mean((np.mod(ys+np.pi,2*np.pi)-np.pi)[:,:N]**2), slips), file=file)
+print("%f %f %f %f %f %f %f %i %i"%(args.freq, args.amp, args.epsilon, order, slip), file=file)
 print(*lengths, file=file)
 print('runtime: %f' % (stop - start), file=file)
 print('runtime: %f' % (stop - start))
