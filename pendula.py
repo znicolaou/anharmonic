@@ -93,8 +93,8 @@ stop = timeit.default_timer()
 
 file=open(args.filebase+'out.dat','w')
 print(*sys.argv,file=file)
-print("%f %f %f %f %f %f %f %i %i"%(args.freq, args.amp, args.epsilon, order, slip), file=file)
-print(*lengths, file=file)
+
+print("%i %f %f %f %f %f %f"%(args.num, args.dt, args.freq, args.amp, args.epsilon, order, slips), file=file)
 print('runtime: %f' % (stop - start), file=file)
 print('runtime: %f' % (stop - start))
 if args.verbose==1:
