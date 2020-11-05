@@ -14,14 +14,14 @@ ZGN_filebase0=data/critical
 mkdir -p $ZGN_filebase0
 ZGN_freq0=2.0
 ZGN_freq1=3.75
-ZGN_amp0=0.03
-ZGN_amp1=0.05
+ZGN_amp0=0.035
+ZGN_amp1=0.045
 ZGN_num=50
 ZGN_freq=`bc -l <<< "${ZGN_freq0}+(${ZGN_freq1}-${ZGN_freq0})/29*$jid"`
-ZGN_noise=0
-ZGN_cycle0=2000
-ZGN_cycles=10000
-ZGN_cycle1=6000
+ZGN_noise=1e-6
+ZGN_cycle0=10000
+ZGN_cycles=50000
+ZGN_cycle1=20000
 
 #calculate ZGN_amp1 initial states
 filebase=${ZGN_filebase0}/${jid}_ic
