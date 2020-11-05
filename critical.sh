@@ -24,7 +24,7 @@ ZGN_cycles=10000
 ZGN_cycle1=6000
 
 #calculate ZGN_amp1 initial states
-filebase=${ZGN_filebase0}/${jid}ic
+filebase=${ZGN_filebase0}/${jid}_ic
 if [ ! -f ${filebase}fs.npy ]; then
 ./pendula.py --verbose 0 --num 100 --initcycle 0 --cycles $ZGN_cycles --outcycle $ZGN_cycle1 --dt 0.5 --initamplitude $ZGN_amp1 --amplitude $ZGN_amp1 --frequency $ZGN_freq --noise $ZGN_noise --noisestep 10 --filebase $filebase &
 else
@@ -52,7 +52,7 @@ done
 for tid in `seq 0 $ZGN_num`; do
 ZGN_amplitude=`bc -l <<< "${ZGN_amp0}+(${ZGN_amp1}-${ZGN_amp0})/${ZGN_num}*$tid"`
 filebase=${ZGN_filebase0}/${jid}_${tid}_1
-cp ${ZGN_filebase0}/${jid}icfs.npy ${ZGN_filebase0}/${jid}_${tid}_1ic.npy
+cp ${ZGN_filebase0}/${jid}_icfs.npy ${ZGN_filebase0}/${jid}_${tid}_1ic.npy
 echo $jid $tid $filebase
 if [ ! -f ${filebase}fs.npy ]; then
 ./pendula.py --verbose 0 --num 100 --initcycle $ZGN_cycle0 --cycles $ZGN_cycles --outcycle $ZGN_cycle1 --dt 0.5 --initamplitude $ZGN_amp1 --amplitude $ZGN_amplitude --frequency $ZGN_freq --noise $ZGN_noise --noisestep 10 --filebase $filebase &
@@ -67,3 +67,4 @@ done
 done
 
 wait
+rm ${ZGN_filebase0}/${jid}_*.npy
