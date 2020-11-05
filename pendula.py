@@ -41,7 +41,8 @@ def func(t, y):
 			amp=args.amp0+t/(2*np.pi*args.initcycle)*(args.amp-args.amp0)
 		else:
 			amp=args.amp
-		return np.concatenate( [p/lengths, (-args.damp*args.freq*p - (1+amp*(args.freq)**2*np.cos(t))*np.sin(q) +args.spring*np.roll(lengths,1)*np.sin(np.roll(q,1)-q)+args.spring*np.roll(lengths,-1)*np.sin(np.roll(q,-1)-q)+args.spring*(np.roll(lengths,1)+np.roll(lengths,-1)-2*lengths)*np.sin(q)+noises)/args.freq**2] )
+		# return np.concatenate( [p/lengths, (-args.damp*args.freq*p - (1+amp*(args.freq)**2*np.cos(t))*np.sin(q) +args.spring*np.roll(lengths,1)*np.sin(np.roll(q,1)-q)+args.spring*np.roll(lengths,-1)*np.sin(np.roll(q,-1)-q)+args.spring*(np.roll(lengths,1)+np.roll(lengths,-1)-2*lengths)*np.sin(q)+noises)/args.freq**2] )
+		return np.concatenate( [p/lengths/args.freq, (-args.damp*p - (1+amp*(args.freq)**2*np.cos(t))*np.sin(q) +args.spring*np.roll(lengths,1)*np.sin(np.roll(q,1)-q)+args.spring*np.roll(lengths,-1)*np.sin(np.roll(q,-1)-q)+args.spring*(np.roll(lengths,1)+np.roll(lengths,-1)-2*lengths)*np.sin(q)+noises)/args.freq] )
 
 start = timeit.default_timer()
 

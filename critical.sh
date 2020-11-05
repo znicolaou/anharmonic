@@ -19,7 +19,7 @@ ZGN_amp1=0.05
 ZGN_num=50
 ZGN_freq=`bc -l <<< "${ZGN_freq0}+(${ZGN_freq1}-${ZGN_freq0})/29*$jid"`
 ZGN_noise=0
-ZGN_cycle0=5000
+ZGN_cycle0=2000
 ZGN_cycles=10000
 ZGN_cycle1=6000
 
