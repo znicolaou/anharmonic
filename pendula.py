@@ -52,11 +52,11 @@ ys=np.zeros((int((args.cycles-args.outcycle)/args.dt),2*N))
 y=np.zeros(2*N)
 if (os.path.isfile(args.filebase+"ic.npy")):
 	# if args.verbose==1:
-	print("using initial conditions from file")
+	print("using initial conditions from file",flush=True)
 	y=np.load(args.filebase+"ic.npy")
 else:
 	# if args.verbose==1:
-	print("using random initial contions")
+	print("using random initial contions",flush=True)
 	y[N:] = args.init*(np.random.random(N)-0.5)
 lengths=np.array([1+args.delta*(-1)**i for i in range(N)])+args.epsilon*(np.random.random(N)-0.5)
 noises=np.random.normal(0,args.sigma/np.sqrt(args.dt/args.step),size=N)
