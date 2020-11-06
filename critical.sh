@@ -55,7 +55,7 @@ tid=0
 ZGN_stop=0
 while [ $ZGN_stop -eq 0 ] && [ $tid -le $ZGN_num ]; do
 growth=`tail -n 2  ${ZGN_filebase0}/${jid}_${tid}_0out.dat | head -n 1 | cut -d' ' -f6`
-ZGN_stop=bc -l <<< "$growth > 0.0"
+ZGN_stop=`bc -l <<< "$growth > 0.0"`
 tid=$((tid+1))
 done
 
