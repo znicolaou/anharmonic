@@ -84,15 +84,17 @@ if args.verbose==1:
 	pbar.finish()
 
 order=np.mean((np.mod(ys+np.pi,2*np.pi)-np.pi)[:,:N]**2)
-# try:
-# min=np.min(np.linalg.norm(ys[1:]-ys[0],axis=1))
-# N2=np.where(np.linalg.norm(ys[1:]-ys[0],axis=1)==min)[0][0]
-# dy=np.abs(np.fft.fft((np.mod(ys+np.pi,2*np.pi)-np.pi)[:N2],axis=0))/N2**0.5
-# except:
-# 	N2=len(ys)
-# 	dy=np.abs(np.fft.fft((np.mod(ys+np.pi,2*np.pi)-np.pi)[:N2],axis=0))/N2**0.5
-N2=len(ys)
-dy=np.abs(np.fft.fft((np.mod(ys+np.pi,2*np.pi)-np.pi)[:N2],axis=0))/(N2**0.5)
+try:
+	norms=np.linalg.norm(ys[-100:,:N]-ys[0,:N],axis=1)
+	min=np.min(norms)
+	N2=np.where(np.linalg.norm(ys[:,:N]-ys[0,:N],axis=1)==min)[0][0]
+	print(N2,len(ys))
+	dy=np.abs(np.fft.fft(ys[:N2,:N],axis=0))/((2*np.pi*N2)**0.5)
+except:
+	N2=len(ys)
+	dy=np.abs(np.fft.fft(ys[:N2,:N],axis=0))/((2*np.pi*N2)**0.5)
+# N2=len(ys)
+# dy=np.abs(np.fft.fft((np.mod(ys+np.pi,2*np.pi)-np.pi)[:N2],axis=0))/(N2**0.5)
 epsilon=(np.argmax(np.mean(dy,axis=1)))/(N2*args.dt)
 epsilon=np.min([epsilon,1-epsilon])
 dy2=np.mean(np.abs(np.fft.fft((np.mod(ys+np.pi,2*np.pi)-np.pi)[:N2,:N:2],axis=1))**2+np.abs(np.fft.fft((np.mod(ys+np.pi,2*np.pi)-np.pi)[:N2,1:N:2],axis=1))**2,axis=0)
