@@ -90,8 +90,8 @@ try:
 except:
 	N2=len(ys)
 	dy=np.abs(np.fft.fft((np.mod(ys+np.pi,2*np.pi)-np.pi)[:N2],axis=0))**2
-# N2=len(ys)
-# dy=np.abs(np.fft.fft((np.mod(ys+np.pi,2*np.pi)-np.pi)[:N2],axis=0))**2
+N2=len(ys)
+dy=np.abs(np.fft.fft((np.mod(ys+np.pi,2*np.pi)-np.pi)[:N2],axis=0))**2
 epsilon=(np.argmax(np.mean(dy,axis=1)))/(N2*args.dt)
 epsilon=np.min([epsilon,1-epsilon])
 dy2=np.mean(np.abs(np.fft.fft((np.mod(ys+np.pi,2*np.pi)-np.pi)[:N2,:N:2],axis=1))**2+np.abs(np.fft.fft((np.mod(ys+np.pi,2*np.pi)-np.pi)[:N2,1:N:2],axis=1))**2,axis=0)
