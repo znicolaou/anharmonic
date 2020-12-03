@@ -36,13 +36,12 @@ parser.add_argument("--verbose", type=int, default=1, dest='verbose', help='Verb
 args = parser.parse_args()
 
 def func(t, y):
-		q=y[:N]
+		q=np.mod(y[:N]+np.pi,2*np.pi)-np.pi
 		p=y[N:]
 		if t < 2*np.pi*args.initcycle:
 			amp=args.amp0+t/(2*np.pi*args.initcycle)*(args.amp-args.amp0)
 		else:
 			amp=args.amp
-		# return np.concatenate( [p/lengths, (-args.damp*args.freq*p - (1+amp*(args.freq)**2*np.cos(t))*np.sin(q) +args.spring*np.roll(lengths,1)*np.sin(np.roll(q,1)-q)+args.spring*np.roll(lengths,-1)*np.sin(np.roll(q,-1)-q)+args.spring*(np.roll(lengths,1)+np.roll(lengths,-1)-2*lengths)*np.sin(q)+noises)/args.freq**2] )
 		return np.concatenate( [p/lengths/args.freq, (-args.damp*p - (1+amp*(args.freq)**2*np.cos(t))*np.sin(q) +args.spring*np.roll(lengths,1)*np.sin(np.roll(q,1)-q)+args.spring*np.roll(lengths,-1)*np.sin(np.roll(q,-1)-q)+args.spring*(np.roll(lengths,1)+np.roll(lengths,-1)-2*lengths)*np.sin(q)+noises)/args.freq] )
 
 start = timeit.default_timer()
@@ -74,10 +73,13 @@ for n in range(int(args.cycles/args.dt)):
 		# t=n*2*np.pi*args.dt+m*2*np.pi*args.dt/args.step
 		noises=np.random.normal(0,args.sigma/np.sqrt(2*np.pi*args.dt/args.step),size=N)
 		y=rode.integrate(rode.t + 2*np.pi*args.dt/args.step)
+
 	if args.verbose==1:
 		pbar.update(rode.t)
 	if n >= int(args.outcycle/args.dt):
-		ys[n-int(args.outcycle/args.dt)]=y
+		# ys[n-int(args.outcycle/args.dt)]=y
+		ys[n-int(args.outcycle/args.dt),:N]=np.mod(y[:N]+np.pi,2*np.pi)-np.pi
+		ys[n-int(args.outcycle/args.dt),N:]=y[N:]
 if args.verbose==1:
 	pbar.finish()
 
@@ -85,18 +87,24 @@ order=np.mean((np.mod(ys+np.pi,2*np.pi)-np.pi)[:,:N]**2)
 try:
 	N2=argrelmin(np.linalg.norm(ys-ys[0],axis=1))[0][-1]
 	dy=np.abs(np.fft.fft((np.mod(ys+np.pi,2*np.pi)-np.pi)[:N2],axis=0))**2
-	slips=np.mean(np.round(np.abs((ys[0,:N]-ys[-1,N:])/(2*np.pi))))
 except:
 	N2=len(ys)
-	slips=0
 	dy=np.abs(np.fft.fft((np.mod(ys+np.pi,2*np.pi)-np.pi)[:N2],axis=0))**2
+N2=len(ys)
+dy=np.abs(np.fft.fft((np.mod(ys+np.pi,2*np.pi)-np.pi)[:N2],axis=0))**2
+epsilon=(np.argmax(np.mean(dy,axis=1)))/(N2*args.dt)
+epsilon=np.min([epsilon,1-epsilon])
+dy2=np.mean(np.abs(np.fft.fft((np.mod(ys+np.pi,2*np.pi)-np.pi)[:N2,:N:2],axis=1))**2+np.abs(np.fft.fft((np.mod(ys+np.pi,2*np.pi)-np.pi)[:N2,1:N:2],axis=1))**2,axis=0)
+wavenumber=2*np.pi*np.argmax(dy2)/(N/2-1)
+
+print(order,epsilon,wavenumber)
 np.save(args.filebase+"power",np.array([np.arange(N2)/(N2*args.dt),np.mean(dy,axis=1)]))
 stop = timeit.default_timer()
 
 file=open(args.filebase+'out.dat','w')
 print(*sys.argv,file=file)
 
-print("%i %f %f %f %f %f %f"%(args.num, args.dt, args.freq, args.amp, args.epsilon, order, slips), file=file)
+print("%i %f %f %f %f %f %f %f"%(args.num, args.dt, args.freq, args.amp, args.epsilon, order, epsilon, wavenumber), file=file)
 print('runtime: %f' % (stop - start), file=file)
 print('runtime: %f' % (stop - start))
 if args.verbose==1:
