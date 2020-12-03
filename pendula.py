@@ -84,12 +84,13 @@ if args.verbose==1:
 	pbar.finish()
 
 order=np.mean((np.mod(ys+np.pi,2*np.pi)-np.pi)[:,:N]**2)
-try:
-	N2=argrelmin(np.linalg.norm(ys-ys[0],axis=1))[0][-1]
-	dy=np.abs(np.fft.fft((np.mod(ys+np.pi,2*np.pi)-np.pi)[:N2],axis=0))**2
-except:
-	N2=len(ys)
-	dy=np.abs(np.fft.fft((np.mod(ys+np.pi,2*np.pi)-np.pi)[:N2],axis=0))**2
+# try:
+min=np.min(np.linalg.norm(ys[1:]-ys[0],axis=1))
+N2=np.where(np.linalg.norm(ys[1:]-ys[0],axis=1)==min)[0][0]
+dy=np.abs(np.fft.fft((np.mod(ys+np.pi,2*np.pi)-np.pi)[:N2],axis=0))/N2**0.5
+# except:
+# 	N2=len(ys)
+# 	dy=np.abs(np.fft.fft((np.mod(ys+np.pi,2*np.pi)-np.pi)[:N2],axis=0))/N2**0.5
 # N2=len(ys)
 # dy=np.abs(np.fft.fft((np.mod(ys+np.pi,2*np.pi)-np.pi)[:N2],axis=0))**2
 epsilon=(np.argmax(np.mean(dy,axis=1)))/(N2*args.dt)
