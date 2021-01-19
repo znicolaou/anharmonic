@@ -72,4 +72,4 @@ done
 done
 
 wait
-rm ${filebase0}/*.npy
+rm ${filebase0}/${jid}_*.npy
