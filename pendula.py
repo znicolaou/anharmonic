@@ -30,7 +30,7 @@ parser.add_argument("--seed", type=int, default=1, dest='seed', help='Seed for r
 parser.add_argument("--damp", type=float, default=0.1, dest='damp', help='Damping coefficient')
 parser.add_argument("--spring", type=float, default=1.0, dest='spring', help='Spring coefficient')
 parser.add_argument("--init", type=float, default=0.01, dest='init', help='Initial random scale')
-parser.add_argument("--rtol", type=float, default=1e-3, dest='rtol', help='Relative error tolerance')
+parser.add_argument("--rtol", type=float, default=1e-6, dest='rtol', help='Relative error tolerance')
 parser.add_argument("--atol", type=float, default=1e-6, dest='atol', help='Absolute error tolerance')
 parser.add_argument("--verbose", type=int, default=1, dest='verbose', help='Verbose output')
 args = parser.parse_args()
@@ -88,7 +88,6 @@ try:
 	norms=np.linalg.norm(ys[-100:,:N]-ys[0,:N],axis=1)
 	min=np.min(norms)
 	N2=np.where(np.linalg.norm(ys[:,:N]-ys[0,:N],axis=1)==min)[0][0]
-	print(N2,len(ys))
 	dy=np.abs(np.fft.fft(ys[:N2,:N],axis=0))/((2*np.pi*N2)**0.5)
 except:
 	N2=len(ys)
