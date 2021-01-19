@@ -14,6 +14,7 @@ ZGN_noise=0
 ZGN_delta=0.35
 ZGN_num=32
 filebase0=data/critical2
+mkdir -p $filebase0
 
 #calculate high amplitudes initial states
 filebase=${filebase0}/${jid}_1
