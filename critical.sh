@@ -38,7 +38,7 @@ wait
 
 #decrease from 0.05
 ZGN_amplitude=`bc -l <<< "0.025+0.01/50*$jid"`
-filebase=data/noise/${jid}_1
+filebase=${filebase0}/${jid}_1
 mv ${filebase0}/${jid}_1fs.npy ${filebase0}/${jid}_1ic.npy
 echo $jid $tid $filebase
 if [ ! -f ${filebase}fs.npy ]; then
