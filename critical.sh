@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH -n 8
-#SBATCH -a [0-30]
+#SBATCH -a [0-64]
 #SBATCH --mem=64gb
 #SBATCH --output=outs/%j.out
 #SBATCH -p GTX980
@@ -17,10 +17,10 @@ ZGN_freq0=3.3
 ZGN_freq1=3.7
 ZGN_amp0=0.02
 ZGN_amp1=0.05
-ZGN_steps=30
-ZGN_cycles=5000
-ZGN_outcycle=4000
-ZGN_initcycle=1000
+ZGN_steps=64
+ZGN_cycles=25000
+ZGN_outcycle=20000
+ZGN_initcycle=5000
 
 filebase0=data/critical2
 mkdir -p $filebase0
