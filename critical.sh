@@ -51,13 +51,13 @@ ZGN_stop=0
 echo [ $ZGN_stop -eq 0 ]
 echo [ $tidc1 -le $ZGN_steps ]
 while [ $ZGN_stop -eq 0 ] && [ $tidc1 -le $ZGN_steps ]; do
-growth=`tail -n 2  ${ZGN_filebase0}/${jid}_${tidc1}_0out.dat | head -n 1 | cut -d' ' -f6`
+growth=`tail -n 2  ${filebase0}/${jid}_${tidc1}_0out.dat | head -n 1 | cut -d' ' -f6`
 echo $growth
 ZGN_stop=`bc -l <<< "$growth > 0.01"`
 tidc1=$((tidc1+1))
 done
 echo critical driving 0 at $jid $tidc1
-filebase1=${ZGN_filebase0}/${jid}_${tidc1}
+filebase1=${filebase0}/${jid}_${tidc1}
 
 #decrease amplitude from ZGN_amp1
 for tid in `seq 0 $tidc1`; do
@@ -83,13 +83,13 @@ wait
 tidc2=0
 ZGN_stop=0
 while [ $ZGN_stop -eq 0 ] && [ $tidc2 -le $tidc1 ]; do
-growth=`tail -n 2  ${ZGN_filebase0}/${jid}_${tidc2}_0out.dat | head -n 1 | cut -d' ' -f6`
+growth=`tail -n 2  ${filebase0}/${jid}_${tidc2}_0out.dat | head -n 1 | cut -d' ' -f6`
 echo $growth
 ZGN_stop=`bc -l <<< "$growth > 0.01"`
 tidc2=$((tidc2+1))
 done
 echo critical driving 1 at $jid $tidc2
-filebase1=${ZGN_filebase0}/${jid}_${tidc2}
+filebase1=${filebase0}/${jid}_${tidc2}
 
 if [ $tidc2 -lt $tidc1 ]; then
 ZGN_amp=`bc -l <<< "${ZGN_amp0}+(${ZGN_amp1}-${ZGN_amp0})/${ZGN_steps}*$tidc1"`
@@ -118,7 +118,7 @@ fi
 jidc1=0
 ZGN_stop=0
 while [ $ZGN_stop -eq 0 ] && [ $jidc1 -le $jid ]; do
-growth=`tail -n 2  ${ZGN_filebase0}/${jid}_${tid}_2_${jid2}0out.dat | head -n 1 | cut -d' ' -f6`
+growth=`tail -n 2  ${filebase0}/${jid}_${tid}_2_${jid2}0out.dat | head -n 1 | cut -d' ' -f6`
 echo $growth
 ZGN_stop=`bc -l <<< "$growth > 0.01"`
 jidc1=$((jidc1+1))
