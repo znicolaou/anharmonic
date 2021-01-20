@@ -89,7 +89,7 @@ filebase1=${filebase0}/${jid}_${tidc2}
 
 if [ $tidc2 -lt $tidc1 ]; then
 ZGN_amp=`bc -l <<< "${ZGN_amp0}+(${ZGN_amp1}-${ZGN_amp0})/${ZGN_steps}*$tidc1"`
-ZGN_freq0=$ZGN_freq
+ZGN_freqinit=$ZGN_freq
 
 #decrease frequency from ZGN_freq
 for jid2 in `seq 0 $jid`; do
@@ -98,7 +98,7 @@ filebase=${filebase0}/${jid}_${tid}_2_${jid2}
 cp ${filebase1}_0fs.npy ${filebase}ic.npy
 echo $jid $tid $filebase
 if [ ! -f ${filebase}fs.npy ]; then
-./pendula.py --verbose 0 --delta $ZGN_delta --num $ZGN_num --initcycle $ZGN_initcycle --cycles $ZGN_cycles --outcycle $ZGN_outcycle --dt 0.5 --initamplitude $ZGN_amp --amplitude $ZGN_amp --initfrequency $ZGN_freq0 --frequency $ZGN_freq --noise $ZGN_noise --noisestep 10 --filebase $filebase &
+./pendula.py --verbose 0 --delta $ZGN_delta --num $ZGN_num --initcycle $ZGN_initcycle --cycles $ZGN_cycles --outcycle $ZGN_outcycle --dt 0.5 --initamplitude $ZGN_amp --amplitude $ZGN_amp --initfrequency $ZGN_freqinit --frequency $ZGN_freq --noise $ZGN_noise --noisestep 10 --filebase $filebase &
 else
 echo "previously completed"
 fi
