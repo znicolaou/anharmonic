@@ -109,15 +109,17 @@ js=`jobs | wc -l`;
 done
 done
 wait
-fi
 
 jidc1=0
 ZGN_stop=0
 while [ $ZGN_stop -eq 0 ] && [ $jidc1 -le $jid ]; do
-growth=`tail -n 2  ${filebase0}/${jid}_${tid}_2_${jidc1}0out.dat | head -n 1 | cut -d' ' -f6`
+growth=`tail -n 2  ${filebase0}/${jid}_${tid}_2_${jidc1}out.dat | head -n 1 | cut -d' ' -f6`
 ZGN_stop=`bc -l <<< "$growth > 0.0001"`
 jidc1=$((jidc1+1))
 done
 echo critical driving 2 at $jidc1 $tidc1
+else
+echo critical driving 2 at $jid $tidc1
+fi
 
 rm ${filebase0}/${jid}_*.npy
