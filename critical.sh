@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH -n 8
-#SBATCH -a [1-32]
+#SBATCH -a [0-30]
 #SBATCH --mem=64gb
 #SBATCH --output=outs/%j.out
 #SBATCH -p GTX980
@@ -17,7 +17,7 @@ ZGN_freq0=3.3
 ZGN_freq1=3.7
 ZGN_amp0=0.02
 ZGN_amp1=0.05
-ZGN_steps=32
+ZGN_steps=30
 ZGN_cycles=5000
 ZGN_outcycle=4000
 ZGN_initcycle=1000
@@ -37,7 +37,7 @@ fi
 
 #increase from ZGN_amp0
 for tid in `seq 0 $ZGN_steps`; do
-ZGN_amp=`bc -l <<< "${ZGN_amp0}+(${ZGN_amp1}-${ZGN_amp0})/${ZGN_steps}*$jid"`
+ZGN_amp=`bc -l <<< "${ZGN_amp0}+(${ZGN_amp1}-${ZGN_amp0})/${ZGN_steps}*$tid"`
 filebase=${filebase0}/${jid}_${tid}_0
 echo $jid $tid $filebase
 if [ ! -f ${filebase}fs.npy ]; then
@@ -55,7 +55,7 @@ wait
 
 #decrease from ZGN_amp1
 for tid in `seq 0 $ZGN_steps`; do
-ZGN_amp=`bc -l <<< "${ZGN_amp0}+(${ZGN_amp1}-${ZGN_amp0})/${ZGN_steps}*$jid"`
+ZGN_amp=`bc -l <<< "${ZGN_amp0}+(${ZGN_amp1}-${ZGN_amp0})/${ZGN_steps}*$tid"`
 filebase=${filebase0}/${jid}_${tid}_1
 cp ${filebase0}/${jid}_1fs.npy ${filebase0}/${jid}_${tid}_1ic.npy
 echo $jid $tid $filebase
