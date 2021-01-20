@@ -50,7 +50,7 @@ tidc1=0
 ZGN_stop=0
 while [ $ZGN_stop -eq 0 ] && [ $tidc1 -le $ZGN_steps ]; do
 growth=`tail -n 2  ${filebase0}/${jid}_${tidc1}_0out.dat | head -n 1 | cut -d' ' -f6`
-ZGN_stop=`bc -l <<< "$growth > 0.01"`
+ZGN_stop=`bc -l <<< "$growth > 0.0001"`
 tidc1=$((tidc1+1))
 done
 echo critical driving 0 at $jid $tidc1
@@ -80,8 +80,8 @@ wait
 tidc2=0
 ZGN_stop=0
 while [ $ZGN_stop -eq 0 ] && [ $tidc2 -le $tidc1 ]; do
-growth=`tail -n 2  ${filebase0}/${jid}_${tidc2}_0out.dat | head -n 1 | cut -d' ' -f6`
-ZGN_stop=`bc -l <<< "$growth > 0.01"`
+growth=`tail -n 2  ${filebase0}/${jid}_${tidc2}_1out.dat | head -n 1 | cut -d' ' -f6`
+ZGN_stop=`bc -l <<< "$growth > 0.0001"`
 tidc2=$((tidc2+1))
 done
 echo critical driving 1 at $jid $tidc2
@@ -114,8 +114,8 @@ fi
 jidc1=0
 ZGN_stop=0
 while [ $ZGN_stop -eq 0 ] && [ $jidc1 -le $jid ]; do
-growth=`tail -n 2  ${filebase0}/${jid}_${tid}_2_${jid2}0out.dat | head -n 1 | cut -d' ' -f6`
-ZGN_stop=`bc -l <<< "$growth > 0.01"`
+growth=`tail -n 2  ${filebase0}/${jid}_${tid}_2_${jidc1}0out.dat | head -n 1 | cut -d' ' -f6`
+ZGN_stop=`bc -l <<< "$growth > 0.0001"`
 jidc1=$((jidc1+1))
 done
 echo critical driving 2 at $jidc1 $tidc1
