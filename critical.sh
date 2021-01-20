@@ -85,7 +85,6 @@ ZGN_stop=`bc -l <<< "$growth > 0.0001"`
 tidc2=$((tidc2+1))
 done
 echo critical driving 1 at $jid $tidc2
-filebase1=${filebase0}/${jid}_${tidc2}
 
 if [ $tidc2 -lt $tidc1 ]; then
 ZGN_amp=`bc -l <<< "${ZGN_amp0}+(${ZGN_amp1}-${ZGN_amp0})/${ZGN_steps}*$tidc1"`
