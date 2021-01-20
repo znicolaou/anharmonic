@@ -27,21 +27,13 @@ mkdir -p $filebase0
 
 ZGN_freq=`bc -l <<< "${ZGN_freq0}+(${ZGN_freq1}-${ZGN_freq0})/${ZGN_steps}*$jid"`
 
-#calculate high amplitudes initial states
-filebase=${filebase0}/${jid}_1
-if [ ! -f ${filebase}fs.npy ]; then
-./pendula.py --verbose 0 --delta $ZGN_delta --num $ZGN_num --initcycle 0 --cycles $ZGN_cycles --outcycle $ZGN_outcycle --dt 0.5 --initamplitude $ZGN_amp1 --amplitude $ZGN_amp1 --frequency $ZGN_freq --noise $ZGN_noise --noisestep 10 --filebase $filebase &
-else
-echo "previously completed"
-fi
-
-#increase from ZGN_amp0
+#From random initial conditions
 for tid in `seq 0 $ZGN_steps`; do
 ZGN_amp=`bc -l <<< "${ZGN_amp0}+(${ZGN_amp1}-${ZGN_amp0})/${ZGN_steps}*$tid"`
 filebase=${filebase0}/${jid}_${tid}_0
 echo $jid $tid $filebase
 if [ ! -f ${filebase}fs.npy ]; then
-./pendula.py --verbose 0 --delta $ZGN_delta --num $ZGN_num --initcycle $ZGN_initcycle --cycles $ZGN_cycles --outcycle $ZGN_outcycle --dt 0.5 --initamplitude $ZGN_amp0 --amplitude $ZGN_amp --frequency $ZGN_freq --noise $ZGN_noise --noisestep 10 --filebase $filebase &
+./pendula.py --verbose 0 --delta $ZGN_delta --num $ZGN_num --initcycle 0 --cycles $ZGN_cycles --outcycle $ZGN_outcycle --dt 0.5 --initamplitude $ZGN_amp --amplitude $ZGN_amp --frequency $ZGN_freq --noise $ZGN_noise --noisestep 10 --filebase $filebase &
 else
 echo "previously completed"
 fi
@@ -53,11 +45,23 @@ done
 done
 wait
 
+#Find the first non-zero order parameter, and use this as the initial condition/amplitude.
+tid=0
+ZGN_stop=0
+while [ $ZGN_stop -eq 0 ] && [ $tid -le $ZGN_steps ]; do
+growth=`tail -n 2  ${ZGN_filebase0}/${jid}_${tid}_0out.dat | head -n 1 | cut -d' ' -f6`
+echo $growth
+ZGN_stop=`bc -l <<< "$growth > 0.01"`
+tid=$((tid+1))
+done
+echo critical driving at $tid
+filebase1=${ZGN_filebase0}/${jid}_${tid}
+
 #decrease from ZGN_amp1
 for tid in `seq 0 $ZGN_steps`; do
 ZGN_amp=`bc -l <<< "${ZGN_amp0}+(${ZGN_amp1}-${ZGN_amp0})/${ZGN_steps}*$tid"`
 filebase=${filebase0}/${jid}_${tid}_1
-cp ${filebase0}/${jid}_1fs.npy ${filebase0}/${jid}_${tid}_1ic.npy
+cp ${filebase1}_1fs.npy ${filebase0}/${jid}_${tid}_1ic.npy
 echo $jid $tid $filebase
 if [ ! -f ${filebase}fs.npy ]; then
 ./pendula.py --verbose 0 --delta $ZGN_delta --num $ZGN_num --initcycle $ZGN_initcycle --cycles $ZGN_cycles --outcycle $ZGN_outcycle --dt 0.5 --initamplitude $ZGN_amp1 --amplitude $ZGN_amp --frequency $ZGN_freq --noise $ZGN_noise --noisestep 10 --filebase $filebase &
