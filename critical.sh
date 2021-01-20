@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH -n 8
-#SBATCH -a [0-64]
+#SBATCH -a [1-65]
 #SBATCH --mem=64gb
 #SBATCH --output=outs/%j.out
 #SBATCH -p GTX980
