@@ -15,6 +15,7 @@ parser = argparse.ArgumentParser(description='Noisy pendula.')
 parser.add_argument("--filebase", type=str, required=True, dest='filebase', help='Base string for file output')
 parser.add_argument("--num", type=int, default=32, dest='num', help='Number of pendula')
 parser.add_argument("--frequency", type=float, default=3.4, dest='freq', help='Driving frequency')
+parser.add_argument("--initfrequency", type=float, default=3.4, dest='freq0', help='Initial driving frequency')
 parser.add_argument("--initamplitude", type=float, default=0.05, dest='amp0', help='Driving amplitude')
 parser.add_argument("--amplitude", type=float, default=0.05, dest='amp', help='Driving amplitude')
 parser.add_argument("--delta", type=float, default=0.5, dest='delta', help='Alternating pendulum length scale')
@@ -40,9 +41,12 @@ def func(t, y):
 		p=y[N:]
 		if t < 2*np.pi*args.initcycle:
 			amp=args.amp0+t/(2*np.pi*args.initcycle)*(args.amp-args.amp0)
+			freq=args.freq0+t/(2*np.pi*args.initcycle)*(args.freq-args.freq0)
 		else:
 			amp=args.amp
-		return np.concatenate( [p/lengths/args.freq, (-args.damp*p - (1+amp*(args.freq)**2*np.cos(t))*np.sin(q) +args.spring*np.roll(lengths,1)*np.sin(np.roll(q,1)-q)+args.spring*np.roll(lengths,-1)*np.sin(np.roll(q,-1)-q)+args.spring*(np.roll(lengths,1)+np.roll(lengths,-1)-2*lengths)*np.sin(q)+noises)/args.freq] )
+			freq=args.freq
+
+		return np.concatenate( [p/lengths/freq, (-args.damp*p - (1+amp*freq**2*np.cos(t))*np.sin(q) +args.spring*np.roll(lengths,1)*np.sin(np.roll(q,1)-q)+args.spring*np.roll(lengths,-1)*np.sin(np.roll(q,-1)-q)+args.spring*(np.roll(lengths,1)+np.roll(lengths,-1)-2*lengths)*np.sin(q)+noises)/freq] )
 
 start = timeit.default_timer()
 
