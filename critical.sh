@@ -48,6 +48,8 @@ wait
 #Find the first non-zero order parameter, and use this as the initial condition/amplitude.
 tidc1=0
 ZGN_stop=0
+echo [ $ZGN_stop -eq 0 ]
+echo [ $tidc1 -le $ZGN_steps ]
 while [ $ZGN_stop -eq 0 ] && [ $tidc1 -le $ZGN_steps ]; do
 growth=`tail -n 2  ${ZGN_filebase0}/${jid}_${tidc1}_0out.dat | head -n 1 | cut -d' ' -f6`
 echo $growth
