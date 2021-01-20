@@ -52,7 +52,7 @@ while [ $ZGN_stop -eq 0 ] && [ $tidc1 -le $ZGN_steps ]; do
 growth=`tail -n 2  ${ZGN_filebase0}/${jid}_${tidc1}_0out.dat | head -n 1 | cut -d' ' -f6`
 echo $growth
 ZGN_stop=`bc -l <<< "$growth > 0.01"`
-tidc1=$((tid+1))
+tidc1=$((tidc1+1))
 done
 echo critical driving 0 at $jid $tidc1
 filebase1=${ZGN_filebase0}/${jid}_${tidc1}
