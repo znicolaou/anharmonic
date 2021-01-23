@@ -12,12 +12,12 @@ export OMP_NUM_THREADS=1
 jid=$((SLURM_ARRAY_TASK_ID-1))
 ZGN_init=`bc -l <<< "1.0/32*$jid"`
 ZGN_delta=0.35
-ZGN_num=32
+ZGN_num=4
 ZGN_cycles=5000
 ZGN_outcycle=4000
 ZGN_seeds=128
 
-filebase0=data/random
+filebase0=data/random0
 mkdir -p $filebase0
 
 ZGN_freq=3.5
@@ -42,4 +42,4 @@ wait
 
 rm $filebase0/${jid}*.npy
 
-for tid in `seq 0 $ZGN_seeds`; do tail -n 2 ${filebase0}/${jid}_${tid}out.dat | head -n 1 >> data/random/${jid}.txt; rm ${filebase0}/${jid}_${tid}out.dat; done; 
+for tid in `seq 0 $ZGN_seeds`; do tail -n 2 ${filebase0}/${jid}_${tid}out.dat | head -n 1 >> data/random/${jid}.txt; rm ${filebase0}/${jid}_${tid}out.dat; done;
