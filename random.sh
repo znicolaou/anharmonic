@@ -42,4 +42,4 @@ wait
 
 rm $filebase0/${jid}*.npy
 
-for i in {0..31}; do for j in {1..128}; do tail -n 2 ${filebase0}/${i}_${j}out.dat | head -n 1 >> data/random/${i}.txt; rm ${filebase0}/${i}_${j}out.dat; done; done
+for tid in `seq 0 $ZGN_seeds`; do tail -n 2 ${filebase0}/${jid}_${tid}out.dat | head -n 1 >> data/random/${jid}.txt; rm ${filebase0}/${jid}_${tid}out.dat; done; 
