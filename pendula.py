@@ -37,7 +37,8 @@ parser.add_argument("--verbose", type=int, default=1, dest='verbose', help='Verb
 args = parser.parse_args()
 
 def func(t, y):
-		q=np.mod(y[:N]+np.pi,2*np.pi)-np.pi
+		# q=np.mod(y[:N]+np.pi,2*np.pi)-np.pi
+		q=y[:N]
 		p=y[N:]
 		if t < 2*np.pi*args.initcycle:
 			amp=args.amp0+t/(2*np.pi*args.initcycle)*(args.amp-args.amp0)
@@ -62,7 +63,8 @@ if (os.path.isfile(args.filebase+"ic.npy")):
 else:
 	# if args.verbose==1:
 	print("using random initial contions",flush=True)
-	y[N:] = args.init*(np.random.random(N)-0.5)
+	y[:N] = args.init*2*np.pi*(np.random.random(N)-0.5)
+	# y[int(N/2):int(N/2)+2] = args.init*2*np.pi*(np.random.random(2)-0.5)
 lengths=np.array([1+args.delta*(-1)**i for i in range(N)])+args.epsilon*(np.random.random(N)-0.5)
 noises=np.random.normal(0,args.sigma/np.sqrt(args.dt/args.step),size=N)
 rode=ode(func).set_integrator('vode', rtol=args.rtol, atol=args.atol, max_step=2*np.pi*args.dt/args.step)
