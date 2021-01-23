@@ -25,10 +25,10 @@ ZGN_amp=0.05
 
 #From random initial conditions
 for tid in `seq 0 $ZGN_seeds`; do
-filebase=${filebase0}/${jid}_${tid}_0
+filebase=${filebase0}/${jid}_${tid}
 echo $jid $tid $filebase
 if [ ! -f ${filebase}fs.npy ]; then
-./pendula.py --verbose 0 --delta $ZGN_delta --num $ZGN_num --init $ZGN_init --cycles $ZGN_cycles --outcycle $ZGN_outcycle --dt 0.5 --amplitude $ZGN_amp  --frequency $ZGN_freq --noisestep 10 --filebase $filebase --seed $tid &
+./pendula.py --verbose 0 --delta $ZGN_delta --num $ZGN_num --init $ZGN_init --cycles $ZGN_cycles --outcycle $ZGN_outcycle --dt 0.5 --amplitude $ZGN_amp  --frequency $ZGN_freq --noisestep 10 --filebase $filebase --seed $tid --rtol 0 --atol 1e-6 &
 else
 echo "previously completed"
 fi
@@ -39,3 +39,7 @@ js=`jobs | wc -l`;
 done
 done
 wait
+
+rm $filebase0/${jid}*.npy
+
+for i in {0..31}; do for j in {1..128}; do tail -n 2 ${filebase0}/${i}_${j}out.dat | head -n 1 >> data/random/${i}.txt; rm ${filebase0}/${i}_${j}out.dat; done; done
